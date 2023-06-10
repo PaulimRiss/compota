@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Register User
+{% endblock %}
+
+{% block main %}
+<form action="{{ url_for('register') }}" method="post">
+    <input required type="email" name="email">
+    <input required type="text" name="username">
+    <input required type="password" name="password">
+    <input required type="password" name="pass-check">
+    <button type="submit">Submit</button>
+</form>
+{% endblock %}
