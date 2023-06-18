@@ -14,9 +14,14 @@ def execute(query, params=None):
     else:
         cursor.execute(query)
 
-    data = cursor.fetchall()
+    data = None
 
+    if cursor.description:
+        headers = [description[0] for description in cursor.description]
+        data = cursor.fetchall()
+        data = [dict(zip(headers, row)) for row in data]
     conn.commit()
+
     conn.close()
 
     return data

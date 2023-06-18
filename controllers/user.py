@@ -1,5 +1,6 @@
 import re
 from flask import Blueprint, redirect, render_template, request, session, url_for
+from utils.date import get_str_date
 from utils.querydb import execute
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -23,8 +24,6 @@ def register():
         return render_template("register.html")
     email = request.form.get("email")
     username = request.form.get("username")
-    teste = execute("SELECT email FROM users")
-    print(teste)
     query_response = execute(
         "SELECT email, username FROM users WHERE email = ? OR username = ?",
         (
@@ -32,7 +31,6 @@ def register():
             username,
         ),
     )
-    print(query_response)
     if len(query_response):
         return render_template("register.html"), 400
 
@@ -49,7 +47,7 @@ def register():
         return render_template("register.html"), 400
 
     execute(
-        "INSERT INTO users (username, email, hash) VALUES (?,?,?)",
-        (username, email, generate_password_hash(password)),
+        "INSERT INTO users (username, email, hash, createdAt) VALUES (?,?,?,?)",
+        (username, email, generate_password_hash(password), get_str_date()),
     )
     return redirect(url_for("user.login"))

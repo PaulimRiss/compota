@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block title %}
+Projects
+{% endblock %}
+{% block main %}
+<h1>Projects</h1>
+<ul>
+    {% for project in projects %}
+    <li>
+        <a href="{{ url_for('project.view', id=project.id) }}">{{ project.title }}</a>
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}
