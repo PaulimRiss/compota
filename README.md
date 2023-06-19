@@ -14,4 +14,4 @@ You must provide a secret key to .env file so that the app can use for the sessi
 ## Generate the database
 If it's not known, a way you can generate a database with the schema given in `compota.sql` is by using sqlite3 in command-line
 
-`sqlite3 <db_name_>.sqlite3 < compota.sql`
+`sqlite3 <db_name>.sqlite3 < compota.sql`
