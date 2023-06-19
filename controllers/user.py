@@ -10,12 +10,24 @@ user_blueprint = Blueprint("user", __name__)
 
 @user_blueprint.route("/login", methods=["GET", "POST"])
 def login():
-    if request.method == "GET":
-        session.clear()
-        return render_template("login.html")
+    session.clear()
 
-    session["username"] = request.form.get("username")
-    return redirect(url_for("index"))
+    if request.method == "GET":
+        return render_template("login.html")
+    else:
+        username, password = request.form.get("username"), request.form.get("password")
+        if not username or not password:
+            return render_template("login.html")
+
+        query_response = execute("SELECT * FROM users WHERE username = ?", (username,))
+
+        if len(query_response) == 0:
+            return render_template("login.html")
+        if not check_password_hash(query_response[0]["hash"], password):
+            return render_template("login.html")
+
+        session["username"] = username
+        return redirect(url_for("index"))
 
 
 @user_blueprint.route("/register", methods=["GET", "POST"])
