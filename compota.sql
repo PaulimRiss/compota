@@ -20,3 +20,15 @@ CREATE TABLE IF NOT EXISTS projects (
 
 -- Indexing projects table by title
 CREATE INDEX IF NOT EXISTS idx_project_title ON projects (title);
+
+-- Create roles table
+CREATE TABLE IF NOT EXISTS roles (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    project_id INTEGER NOT NULL FOREIGN KEY REFERENCES projects(id),
+    user_id INTEGER FOREIGN KEY REFERENCES users(id),
+    admin BOOLEAN NOT NULL,
+    role TEXT NOT NULL,
+);
+
+-- Indexing roles table by project_id
+CREATE INDEX IF NOT EXISTS idx_role_project_id ON roles (project_id);
