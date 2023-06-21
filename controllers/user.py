@@ -1,5 +1,6 @@
 import re
-from flask import Blueprint, redirect, render_template, request, session, url_for
+from venv import logger
+from flask import Blueprint, abort, redirect, render_template, request, session, url_for
 from utils.date import get_str_date
 from utils.querydb import execute
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -17,16 +18,18 @@ def login():
     else:
         username, password = request.form.get("username"), request.form.get("password")
         if not username or not password:
-            return render_template("login.html")
+            abort(400)
 
         query_response = execute("SELECT * FROM users WHERE username = ?", (username,))
 
         if len(query_response) == 0:
-            return render_template("login.html")
+            abort(400)
+
         if not check_password_hash(query_response[0]["hash"], password):
-            return render_template("login.html")
+            abort(400)
 
         session["username"] = username
+        session["user_id"] = query_response[0]["id"]
         return redirect(url_for("index"))
 
 
@@ -44,10 +47,12 @@ def register():
         ),
     )
     if len(query_response):
-        return render_template("register.html"), 400
+        logger.error("User already exists")
+        abort(400)
 
     if not email or re.match(r"^[\w\.-]+@[\w\.-]+\.\w+$", email) is None:
-        return render_template("register.html"), 400
+        logger.error("Invalid email")
+        abort(400)
 
     password, pass_check = request.form.get("password"), request.form.get("pass-check")
 
@@ -56,7 +61,8 @@ def register():
     )
 
     if password != pass_check or not password_regex.match(password):
-        return render_template("register.html"), 400
+        logger.error("Invalid password")
+        abort(400)
 
     execute(
         "INSERT INTO users (username, email, hash, createdAt) VALUES (?,?,?,?)",
