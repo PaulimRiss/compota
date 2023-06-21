@@ -14,5 +14,5 @@ app.register_blueprint(project_blueprint, url_prefix="/project")
 @app.route("/")
 def index():
     if "username" in session:
-        return f'Logged as {session["username"]}!'
+        return redirect(url_for("project.list_projects"))
     return redirect(url_for("user.login"))
